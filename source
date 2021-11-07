@@ -4345,60 +4345,6 @@ IndexContents = function(str,bool,cmdbar,Ianim)
 	end
 end
 
-PlayerGui = Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
-local chatbox
-task.spawn(function()
-	if pcall(function() chatbox = PlayerGui:WaitForChild("Chat").Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar end) then	
-		local function chatboxFocused()
-			canvasPos = CMDsF.CanvasPosition
-		end
-		local chatboxFocusedC = chatbox.Focused:Connect(chatboxFocused)
-
-		local function Index()
-			if chatbox.Text:lower():sub(1,1) == prefix then
-				if SettingsOpen == true then
-					wait(0.2)
-					CMDsF.Visible = true
-					Settings:TweenPosition(UDim2.new(0, 0, 0, 220), "InOut", "Quart", 0.2, true, nil)
-				end
-				IndexContents(PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar.Text:lower():sub(2),true)
-			else
-				minimizeHolder()
-				if SettingsOpen == true then
-					wait(0.2)
-					Settings:TweenPosition(UDim2.new(0, 0, 0, 45), "InOut", "Quart", 0.2, true, nil)
-					CMDsF.Visible = false
-				end
-			end
-		end
-		local chatboxFunc = chatbox:GetPropertyChangedSignal("Text"):Connect(Index)
-
-		local function chatboxFocusLost(enterpressed)
-			if not enterpressed or chatbox.Text:lower():sub(1,1) ~= prefix then
-				IndexContents('',true)
-			end
-			CMDsF.CanvasPosition = canvasPos
-			minimizeHolder()
-		end
-		local chatboxFocusLostC = chatbox.FocusLost:Connect(chatboxFocusLost)
-
-		PlayerGui:WaitForChild("Chat").Frame.ChatBarParentFrame.ChildAdded:Connect(function(newbar)
-			wait()
-			if newbar:FindFirstChild('BoxFrame') then
-				chatbox = PlayerGui:WaitForChild("Chat").Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar
-				if chatboxFocusedC then chatboxFocusedC:Disconnect() end
-				chatboxFocusedC = chatbox.Focused:Connect(chatboxFocused)
-				if chatboxFunc then chatboxFunc:Disconnect() end
-				chatboxFunc = chatbox:GetPropertyChangedSignal("Text"):Connect(Index)
-				if chatboxFocusLostC then chatboxFocusLostC:Disconnect() end
-				chatboxFocusLostC = chatbox.FocusLost:Connect(chatboxFocusLost)
-			end
-		end)
-		--else
-		--print('Custom chat detected. Will not provide suggestions for commands typed in the chat.')
-	end
-end)
-
 function autoComplete(str,curText)
 	local endingChar = {"[", "/", "(", " "}
 	local stop = 0
